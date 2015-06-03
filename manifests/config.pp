@@ -31,12 +31,6 @@ class mesos::config(
     group  => $group,
   }
 
-  file { $conf_dir:
-    ensure => directory,
-    owner  => $owner,
-    group  => $group,
-  }
-
   file { '/etc/default/mesos':
     ensure  => 'present',
     content => template('mesos/default.erb'),

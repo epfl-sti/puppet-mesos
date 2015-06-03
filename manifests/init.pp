@@ -49,24 +49,50 @@ class mesos(
     default  => $version,
   }
 
-  class {'mesos::install':
-    ensure         => $mesos_ensure,
-    repo_source    => $repo,
-    manage_python  => $manage_python,
-    python_package => $python_package,
-  }
+  define common(
+    $repo,
+    $manage_python,
+    $python_package,
+    $log_dir,
+    $conf_dir,
+    $manage_zk_file,
+    $owner,
+    $group,
+    $zookeeper,
+    $env_var,
+    $ulimit,
+    $use_syslog
+    ) {
 
-  class {'mesos::config':
-    log_dir        => $log_dir,
-    conf_dir       => $conf_dir,
-    manage_zk_file => $manage_zk_file,
-    owner          => $owner,
-    group          => $group,
-    zookeeper      => $zookeeper,
-    env_var        => $env_var,
-    ulimit         => $ulimit,
-    use_syslog     => $use_syslog,
-    require        => Class['mesos::install']
+    file { $conf_dir:
+      ensure  => directory,
+      owner   => $owner,
+      group   => $group,
+      recurse => true,
+      purge   => true,
+      force   => true,
+      require => Class['::mesos::install'],
+    }
+
+    class {'mesos::install':
+      ensure         => $mesos_ensure,
+      repo_source    => $repo,
+      manage_python  => $manage_python,
+      python_package => $python_package,
+    }
+    
+    class {'mesos::config':
+      log_dir        => $log_dir,
+      conf_dir       => $conf_dir,
+      manage_zk_file => $manage_zk_file,
+      owner          => $owner,
+      group          => $group,
+      zookeeper      => $zookeeper,
+      env_var        => $env_var,
+      ulimit         => $ulimit,
+      use_syslog     => $use_syslog,
+      require        => Class['mesos::install']
+    }
   }
 
 }

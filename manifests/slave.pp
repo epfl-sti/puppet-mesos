@@ -57,7 +57,6 @@ class mesos::slave (
   $attributes     = {},
   $force_provider = undef, #temporary workaround for starting services
 ) inherits mesos {
-
   validate_hash($env_var)
   validate_hash($cgroups)
   validate_hash($options)
@@ -65,13 +64,19 @@ class mesos::slave (
   validate_hash($attributes)
   validate_string($isolation)
 
-  file { $conf_dir:
-    ensure  => directory,
-    owner   => $owner,
-    group   => $group,
-    recurse => true,
-    purge   => true,
-    force   => true,
+  mesos::common { "slave":
+    repo => $repo,
+    manage_python => $manage_python,
+    python_package => $python_package,
+    log_dir => $log_dir,
+    conf_dir => $conf_dir,
+    manage_zk_file => $manage_zk_file,
+    owner => $owner,
+    group => $group,
+    zookeeper => $zookeeper,
+    env_var => $env_var,
+    ulimit => $ulimit,
+    use_syslog => $use_syslog
   }
 
   file { "${conf_dir}/resources":

@@ -30,14 +30,19 @@ class mesos::master(
   validate_hash($env_var)
   validate_hash($options)
 
-  file { $conf_dir:
-    ensure  => directory,
-    owner   => $owner,
-    group   => $group,
-    recurse => true,
-    purge   => true,
-    force   => true,
-    require => Class['::mesos::install'],
+  mesos::common { "master":
+    repo => $repo,
+    manage_python => $manage_python,
+    python_package => $python_package,
+    log_dir => $log_dir,
+    conf_dir => $conf_dir,
+    manage_zk_file => $manage_zk_file,
+    owner => $owner,
+    group => $group,
+    zookeeper => $zookeeper,
+    env_var => $env_var,
+    ulimit => $ulimit,
+    use_syslog => $use_syslog
   }
 
   file { $work_dir:
